@@ -1,6 +1,7 @@
 import socket
 import typing
 
+# spacing
 class Request(typing.NamedTuple):
 	method: str
 	path: str
