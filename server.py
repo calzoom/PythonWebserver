@@ -1,11 +1,10 @@
 import socket
 import typing
 
-# spacing
-class Request(typing.NamedTuple):
-	method: str
-	path: str
-	headers: typing.Mapping[str, str]
+# class Request(typing.NamedTuple):
+# 	method: str
+# 	path: str
+# 	headers: typing.Mapping[str, str]
 
 def iter_lines(socket: socket.socket, bufsize: int=16_384) -> typing.Generator[bytes, None, bytes]:
 	# read CRLF line by line until empty line, then return remainder
@@ -38,7 +37,8 @@ Content-length: 15
 
 <h1>Hello!</h1>""".replace(b"\n", b"\r\n")
 
-# one dendpoint of a two-way communication link between two sources
+# one endpoint of a two-way communication link between two sources
+# SERVER_SOCKET is the serer-side socket
 with socket.socket() as server_socket:
 	# tell kernel to reuse sockets that are in TIME_WAIT state
 	server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -49,14 +49,15 @@ with socket.socket() as server_socket:
 	server_socket.listen(0)
 	print(f"Listening on {HOST}:{PORT}...")
 
-	while True:
+	while True: # new connection after sending
+		# CLIENT_SOCKET is the client-side socket
 		client_socket, client_addr = server_socket.accept()
 		print(f"New connection from {client_addr}")
 		with client_socket:
 			for request_line in iter_lines(client_socket):
 				print(request_line)
 
+			# send RESPONSE to client-socket
 			client_socket.sendall(RESPONSE)
-
 
 
